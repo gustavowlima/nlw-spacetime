@@ -10,6 +10,7 @@ import { Profile } from "@/components/Profile";
 import { SignIn } from "@/components/SignIn";
 import { Copyright } from "@/components/Copyright";
 import { cookies } from "next/headers";
+import { Toaster } from "react-hot-toast";
 
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-roboto" });
 const baiJamjuree = BaiJamjuree({
@@ -32,6 +33,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body
         className={`${roboto.variable} ${baiJamjuree.variable} bg-gray-900 font-sans text-gray-100`}
       >
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            duration: 3000,
+          }}
+        />
         <main className="grid min-h-screen grid-cols-2">
           {/* Left */}
           <div className="relative flex flex-col items-start justify-between overflow-hidden border-r border-white/10 bg-[url(../assets/bg-stars.svg)] bg-cover px-28 py-16">

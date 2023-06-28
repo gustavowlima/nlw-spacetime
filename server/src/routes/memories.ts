@@ -27,20 +27,28 @@ export async function memoriesRoutes(app: FastifyInstance) {
     });
   });
 
-  app.get("/memories/:id", async (request) => {
+  app.get("/memories/:id", async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
 
+    if (!paramsSchema.safeParse(request.params).success) {
+      return reply.status(400).send("Id not found");
+    }
+
     const { id } = paramsSchema.parse(request.params);
 
-    const memory = await prisma.memory.findUniqueOrThrow({
-      where: {
-        id,
-      },
-    });
+    try {
+      const memory = await prisma.memory.findUniqueOrThrow({
+        where: {
+          id,
+        },
+      });
 
-    return memory;
+      return memory;
+    } catch {
+      return reply.status(404).send("Memory not found");
+    }
   });
 
   app.post("/memories", async (request, reply) => {
