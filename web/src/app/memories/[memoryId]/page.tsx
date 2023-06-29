@@ -1,14 +1,12 @@
 import { MemoryContent } from "@/components/MemoryContent";
-import { MemoryNotFound } from "@/components/MemoryNotFound";
 import { Edit, ChevronLeft } from "lucide-react";
 import { cookies } from "next/headers";
 import Link from "next/link";
-import jwtDecode from "jwt-decode";
 import { api } from "@/lib/api";
 import { ErrorComponent } from "@/components/ErrorComponent";
 import { AxiosError } from "axios";
 
-interface Memory {
+interface MemoryInterface {
   id: string;
   coverUrl: string;
   content: string;
@@ -23,7 +21,7 @@ interface MemoryProps {
 
 async function getMemory(id: string) {
   const token = cookies().get("token")?.value;
-  const response = await api.get(`http://192.168.0.10:3333/memories/${id}`, {
+  const response = await api.get(`/memories/${id}`, {
     headers: {
       Authorization: `Bearer ${token} `,
     },
@@ -34,7 +32,7 @@ async function getMemory(id: string) {
 
 export default async function Memory({ params }: { params: MemoryProps }) {
   try {
-    const memory: Memory = await getMemory(params.memoryId);
+    const memory: MemoryInterface = await getMemory(params.memoryId);
 
     return (
       <div className="flex flex-1 flex-col gap-6 p-8">
