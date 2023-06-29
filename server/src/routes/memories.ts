@@ -4,6 +4,9 @@ import { z } from "zod";
 
 export async function memoriesRoutes(app: FastifyInstance) {
   app.addHook("preHandler", async (request) => {
+    if (request.method === "GET" && request.routerPath === "/memories/:id") {
+      return;
+    }
     await request.jwtVerify();
   });
 
@@ -31,23 +34,40 @@ export async function memoriesRoutes(app: FastifyInstance) {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
-
     if (!paramsSchema.safeParse(request.params).success) {
       return reply.status(400).send("Id not found");
     }
-
     const { id } = paramsSchema.parse(request.params);
 
     try {
+      await request.jwtVerify();
       const memory = await prisma.memory.findUniqueOrThrow({
         where: {
           id,
         },
       });
+      if (!memory) {
+        return reply.status(404).send("Memory not found");
+      }
 
+      if (memory.userId !== request.user.sub) {
+        return reply.status(401).send("Memória não encontrada");
+      }
       return memory;
     } catch {
-      return reply.status(404).send("Memory not found");
+      const memory = await prisma.memory.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!memory) {
+        return reply.status(404).send("Memory not found");
+      }
+
+      if (!memory.isPublic) {
+        return reply.status(401).send("Você não tem acesso a essa memória!");
+      }
+      return memory;
     }
   });
 

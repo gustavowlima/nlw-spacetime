@@ -5,7 +5,10 @@ const signInURL = `https://github.com/login/oauth/authorize?scope=user&client_id
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
-  if (!token) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("code");
+
+  if (!token && request.url !== "/memories/:id") {
     return NextResponse.redirect(signInURL, {
       headers: {
         "Set-Cookie": `redirectTo=${request.url}; Path=/; HttpOnly; max-age=20`,
@@ -17,5 +20,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/memories/:path*",
+  matcher: "/memories/new",
 };

@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         className={`${roboto.variable} ${baiJamjuree.variable} bg-gray-900 font-sans text-gray-100`}
       >
         <Toaster
-          position="top-center"
+          position="bottom-right"
           toastOptions={{
             duration: 3000,
           }}
